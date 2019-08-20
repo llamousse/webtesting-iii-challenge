@@ -1,85 +1,77 @@
-// Test away
 import React from 'react';
-import { render, fireEvent, cleanup } from 'react-testing-library';
-
-import Dashboard from './Dashboard';
+import { render, cleanup, fireEvent } from '@testing-library/react/pure';
+import Dashboard from './Dashboard.js';
 
 describe('<Dashboard />', () => {
-    beforeEach(cleanup);
-    it('should render without crashing', () => {
-        render(<Dashboard />);
-    });
-
-    // INTEGRATION TEST - SNAPSHOT TESTING
-    it('matches snapshot', () => {
-        const dashboard = render(<Dashboard />);
-        expect(dashboard).toMatchSnapshot();
-    });
+  beforeEach(cleanup);
+  it('renders without crashing', () => {
+    render(<Dashboard /> );
+  });
 });
 
-describe('<Dashboard /> state cycle testing', () => {
+describe('<DashBoard /> state transitions', () => {
+  const { getByText } = render(<Dashboard />);
 
-    const dashboard = render(<Dashboard />);
+  it('default state open and unlocked', () => {
+    //verify open and unlocked
+    getByText(/open/i);
+    getByText(/^unlocked$/i);
 
-    it('should show the initial state unlocked and open', () => {
-        dashboard.getByText(/^unlocked$/i);
-        dashboard.getByText(/open/i);
-        const lockBtn = dashboard.getByText(/lock gate/i);
-        const closeBtn = dashboard.getByText(/close gate/i);
+    //getting 'lock' gate and not 'unlocked' gate
+    // ^ $ makes sure it's from the beginning of ^ and ends at &
+    getByText(/^lock gate$/i);
+    getByText(/^close gate$/i);
+  });
 
-        expect(lockBtn.disabled).toBe(true);
-        expect(closeBtn.disabled).toBe(false);
-    });
+  it('open and unlocked to closed and unlocked', () => {
+    const closeBtn = getByText(/close gate/i);
+    fireEvent.click(closeBtn);
 
-    it('unlocked open to unlocked closed', () => {
-        const lockBtn = dashboard.getByText(/^lock gate$/i);
-        const closeBtn = dashboard.getByText(/^close gate$/i);
-        fireEvent.click(closeBtn);
-    
-        dashboard.getByText(/^unlocked$/i);
-        dashboard.getByText(/^closed$/i);
-    
-        const openBtn = dashboard.getByText(/^open gate$/i);
-        expect(lockBtn.disabled).toBe(false);
-        expect(openBtn.disabled).toBe(false);
-      });
+    // check display text
+    getByText(/closed/i);
+    getByText(/^unlocked$/i);
 
-      it('unlocked closed to locked closed', () => {
-        const lockBtn = dashboard.getByText(/^lock gate$/i);
-        const openBtn = dashboard.getByText(/^open gate$/i);
-        fireEvent.click(lockBtn);
-    
-        dashboard.getByText(/^locked$/i);
-        dashboard.getByText(/^closed$/i);
-    
-        const unlockBtn = dashboard.getByText(/^unlock gate$/i);
-        expect(unlockBtn.disabled).toBe(false);
-        expect(openBtn.disabled).toBe(true);
-      });
+    // check button test
+    getByText(/^lock gate$/i);
+    getByText(/open gate/i);
+  });
 
-      it('locked closed to unlocked closed', () => {
-        const unlockBtn = dashboard.getByText(/^unlock gate$/i);
-        const openBtn = dashboard.getByText(/^open gate$/i);
-        fireEvent.click(unlockBtn);
-    
-        dashboard.getByText(/^unlocked$/i);
-        dashboard.getByText(/^closed$/i);
-    
-        const lockBtn = dashboard.getByText(/^lock gate$/i);
-        expect(lockBtn.disabled).toBe(false);
-        expect(openBtn.disabled).toBe(false);
-      });
+  it('closed and unlocked to closed and locked', () => {
+    const lockBtn = getByText(/lock gate/i);
+    fireEvent.click(lockBtn);
 
-      it('unlocked closed to unlocked open', () => {
-        const openBtn = dashboard.getByText(/^open gate$/i);
-        fireEvent.click(openBtn);
-    
-        dashboard.getByText(/^unlocked$/i);
-        dashboard.getByText(/^open$/i);
-    
-        const lockBtn = dashboard.getByText(/^lock gate$/i);
-        const closeBtn = dashboard.getByText(/^close gate$/i);
-        expect(lockBtn.disabled).toBe(true);
-        expect(closeBtn.disabled).toBe(false);
-      });
+    // check display text
+    getByText(/closed/i);
+    getByText(/^locked$/i);
+
+    // check button test
+    getByText(/unlock gate/i);
+    getByText(/open gate/i);
+  });
+
+  it('closed and locked to closed and unlocked', () => {
+    const lockBtn = getByText(/unlock gate/i);
+    fireEvent.click(lockBtn);
+
+    // check display text
+    getByText(/closed/i);
+    getByText(/^unlocked$/i);
+
+    // check button test
+    getByText(/^lock gate$/i);
+    getByText(/open gate/i);
+  });
+
+  it('closed and unlocked to open and unlocked', () => {
+    const openBtn = getByText(/open gate/i);
+    fireEvent.click(openBtn);
+
+    // check display text
+    getByText(/open/i);
+    getByText(/^unlocked$/i);
+
+    // check button test
+    getByText(/^lock gate$/i);
+    getByText(/close gate/i);
+  });
 });

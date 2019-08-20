@@ -11,16 +11,9 @@ describe('<Dashboard />', () => {
         const tree = renderer.create(<Dashboard />);
         expect(tree.toJSON()).toMatchSnapshot();
     });
-});
 
-// describe('asyncDashboardFunc', () => {
-//     // UNIT TEST
-//     it('eventually resolves to success', () => {
-//         const resolvedValue = null;
-//         const expected = 'Success!';
-//         asyncDashboardFunc().then(res => {
-//             resolvedValue = res;
-//             expect(resolvedValue).toEqual(expected);
-//         });
-//     });
-// });
+    it('should render without crashing', () => {
+        render(<Dashboard />);
+    });
+
+});

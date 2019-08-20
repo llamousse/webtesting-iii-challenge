@@ -1,7 +1,9 @@
 // Test away!
 import React from 'react';
 import renderer from 'react-test-renderer';
-import { render, fireEvent, act } from '@testing-library/react';
+import { render } from '@testing-library/react';
+import "jest-dom/extend-expect";
+import "react-testing-library/cleanup-after-each";
 
 import Display from './Display';
 import Controls from '../controls/Controls';
@@ -37,16 +39,12 @@ describe('<Display />', () => {
         })
     });
 
-    it('should use "red-led" class when "locked" or "closed"', () => {
-        const locked = true;
-        const closed = true;
-        const { act } = renderer;
-
-
-
+    it('should have class "green-led" for open or unlocked', () => {
+        const { getByText } = render(<Display />);
+        const open = getByText(/Open/i);
+        const unlocked = getByText(/Unlocked/i);
+        
+        expect(open).toHaveClass("green-led");
+        expect(unlocked).toHaveClass("green-led");
     });
-
-    // it('should use "green-led" class when "unlocked" or "open"', () => {
-
-    // });
 });

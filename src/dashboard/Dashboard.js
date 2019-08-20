@@ -3,6 +3,14 @@ import React from 'react';
 import Display from '../display/Display';
 import Controls from '../controls/Controls';
 
+// export const asyncDashboardFunc = () => {
+//   return new Promise((resolve) => {
+//     setTimeout(() => {
+//       resolve('Success!')
+//     }, 1000);
+//   });
+// };
+
 class Dashboard extends React.Component {
   state = {
     locked: false,
